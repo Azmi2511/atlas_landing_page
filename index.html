@@ -1,0 +1,1714 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATLAS - Sistem Presensi dengan Pengenalan Wajah</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a0ca3;
+            --secondary: #4cc9f0;
+            --accent: #7209b7;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4bb543;
+            --warning: #ff9e00;
+            --danger: #e63946;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--light);
+            overflow-x: hidden;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header & Navigation */
+        header {
+            background-color: rgba(255, 255, 255, 0.98);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        .header-scrolled {
+            padding: 10px 0;
+            background-color: rgba(255, 255, 255, 0.98);
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-weight: 800;
+            font-size: 1.8rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            font-size: 2rem;
+            color: var(--accent);
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 30px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+        
+        .nav-links a:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: var(--primary);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-links a:hover:after {
+            width: 100%;
+        }
+        
+        .cta-button {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
+        }
+        
+        .mobile-menu {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--dark);
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding: 180px 0 100px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .hero-text {
+            flex: 1;
+            max-width: 600px;
+            z-index: 2;
+        }
+        
+        .hero-text h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            font-weight: 800;
+        }
+        
+        .hero-text p {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 15px 35px;
+            background-color: var(--secondary);
+            color: white;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            font-size: 1.1rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+            background-color: #3ab8db;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid white;
+            margin-left: 15px;
+        }
+        
+        .btn-outline:hover {
+            background: white;
+            color: var(--primary);
+        }
+        
+        .hero-visual {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        
+        .camera-animation {
+            width: 400px;
+            height: 400px;
+            position: relative;
+            perspective: 1000px;
+        }
+        
+        .camera-body {
+            width: 250px;
+            height: 200px;
+            background: linear-gradient(135deg, #2d3748, #4a5568);
+            border-radius: 20px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .camera-lens {
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, #1a202c, #2d3748);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 10px solid #4a5568;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .lens-inner {
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, #000, #2d3748);
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .scan-beam {
+            position: absolute;
+            width: 100%;
+            height: 5px;
+            background: var(--secondary);
+            top: 0;
+            left: 0;
+            animation: scan 2s linear infinite;
+            box-shadow: 0 0 15px var(--secondary);
+        }
+        
+        .face-detection {
+            position: absolute;
+            width: 150px;
+            height: 200px;
+            border: 2px solid var(--secondary);
+            border-radius: 50% 50% 40% 40%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            animation: detect 4s infinite;
+        }
+        
+        @keyframes scan {
+            0% { top: 0; }
+            50% { top: 100%; }
+            100% { top: 0; }
+        }
+        
+        @keyframes detect {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+        
+        .floating-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .floating-element {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            animation: float 6s infinite ease-in-out;
+        }
+        
+        .element-1 {
+            width: 80px;
+            height: 80px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+        
+        .element-2 {
+            width: 60px;
+            height: 60px;
+            top: 20%;
+            right: 15%;
+            animation-delay: 1s;
+        }
+        
+        .element-3 {
+            width: 100px;
+            height: 100px;
+            bottom: 15%;
+            left: 15%;
+            animation-delay: 2s;
+        }
+        
+        .element-4 {
+            width: 70px;
+            height: 70px;
+            bottom: 10%;
+            right: 10%;
+            animation-delay: 3s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+        
+        /* Sections */
+        section {
+            padding: 100px 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .section-title h2 {
+            font-size: 2.8rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title h2:after {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 5px;
+            background: var(--accent);
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 5px;
+        }
+        
+        .section-title p {
+            max-width: 800px;
+            margin: 30px auto 0;
+            color: var(--gray);
+            font-size: 1.2rem;
+        }
+        
+        /* About Section */
+        .about-content {
+            display: flex;
+            align-items: center;
+            gap: 60px;
+        }
+        
+        .about-text {
+            flex: 1;
+        }
+        
+        .about-text h3 {
+            font-size: 2rem;
+            margin-bottom: 25px;
+            color: var(--primary-dark);
+        }
+        
+        .about-text p {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+        
+        .feature-list {
+            list-style: none;
+            margin-top: 30px;
+        }
+        
+        .feature-list li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .feature-list i {
+            color: var(--success);
+            margin-right: 15px;
+            font-size: 1.2rem;
+            margin-top: 3px;
+        }
+        
+        .about-visual {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .system-flow {
+            width: 100%;
+            max-width: 500px;
+            height: 500px;
+            position: relative;
+        }
+        
+        .flow-step {
+            position: absolute;
+            width: 140px;
+            height: 140px;
+            background: white;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+        
+        .flow-step:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+        
+        .step-1 {
+            top: 10%;
+            left: 10%;
+            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+            color: white;
+        }
+        
+        .step-2 {
+            top: 10%;
+            right: 10%;
+            background: linear-gradient(135deg, #4cc9f0, #3a86ff);
+            color: white;
+        }
+        
+        .step-3 {
+            bottom: 30%;
+            left: 0;
+            background: linear-gradient(135deg, #7209b7, #560bad);
+            color: white;
+        }
+        
+        .step-4 {
+            bottom: 10%;
+            right: 20%;
+            background: linear-gradient(135deg, #f72585, #b5179e);
+            color: white;
+        }
+        
+        .step-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .step-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        
+        .flow-connector {
+            position: absolute;
+            background: var(--light-gray);
+            z-index: 1;
+        }
+        
+        .connector-1 {
+            width: 150px;
+            height: 3px;
+            top: 35%;
+            left: 30%;
+            transform: rotate(15deg);
+        }
+        
+        .connector-2 {
+            width: 180px;
+            height: 3px;
+            top: 35%;
+            right: 30%;
+            transform: rotate(-15deg);
+        }
+        
+        .connector-3 {
+            width: 200px;
+            height: 3px;
+            bottom: 40%;
+            left: 20%;
+            transform: rotate(30deg);
+        }
+        
+        /* Features Section */
+        .features {
+            background-color: #f8f9fa;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 40px 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            color: white;
+            font-size: 2rem;
+        }
+        
+        .feature-card h3 {
+            margin-bottom: 20px;
+            color: var(--primary-dark);
+            font-size: 1.5rem;
+        }
+        
+        .feature-card p {
+            color: var(--gray);
+        }
+        
+        /* Dashboard Preview */
+        .dashboard-preview {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .dashboard-preview .section-title h2 {
+            color: white;
+        }
+        
+        .dashboard-preview .section-title p {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .dashboard-container {
+            position: relative;
+            max-width: 1000px;
+            margin: 0 auto;
+            height: 600px;
+            background: #0f3460;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+        
+        .dashboard-screen {
+            width: 100%;
+            height: 100%;
+            background: #1a1a2e;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .dashboard-header {
+            height: 60px;
+            background: #0f3460;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+        
+        .dashboard-nav {
+            display: flex;
+            list-style: none;
+        }
+        
+        .dashboard-nav li {
+            margin-right: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        
+        .dashboard-nav li.active {
+            color: white;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .dashboard-nav li:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .dashboard-content {
+            display: flex;
+            height: calc(100% - 60px);
+        }
+        
+        .sidebar {
+            width: 250px;
+            background: #16213e;
+            padding: 20px;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+        }
+        
+        .sidebar-menu li {
+            margin-bottom: 15px;
+            color: rgba(255, 255, 255, 0.7);
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .sidebar-menu li:hover, .sidebar-menu li.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-menu i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: auto auto;
+            gap: 20px;
+            overflow-y: auto;
+        }
+        
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .card-large {
+            grid-column: span 2;
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        
+        .stat-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-item:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: white;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .chart-container {
+            height: 200px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .chart-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .attendance-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .attendance-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .attendance-item:last-child {
+            border-bottom: none;
+        }
+        
+        .student-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .student-info {
+            flex: 1;
+        }
+        
+        .student-name {
+            font-weight: 500;
+        }
+        
+        .student-class {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .attendance-time {
+            color: var(--secondary);
+            font-weight: 500;
+        }
+        
+        .attendance-status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-left: 10px;
+        }
+        
+        .status-present {
+            background: rgba(76, 201, 240, 0.2);
+            color: var(--secondary);
+        }
+        
+        .status-late {
+            background: rgba(255, 158, 0, 0.2);
+            color: var(--warning);
+        }
+        
+        .status-absent {
+            background: rgba(230, 57, 70, 0.2);
+            color: var(--danger);
+        }
+        
+        .filter-options {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .filter-btn {
+            padding: 5px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .filter-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Roles Section */
+        .roles-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .role-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .role-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .role-header {
+            padding: 25px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            text-align: center;
+        }
+        
+        .role-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .role-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .role-body {
+            padding: 25px;
+        }
+        
+        .role-features {
+            list-style: none;
+        }
+        
+        .role-features li {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .role-features i {
+            color: var(--success);
+            margin-right: 10px;
+            margin-top: 3px;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            text-align: center;
+            padding: 100px 0;
+        }
+        
+        .cta-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .cta-section p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            opacity: 0.9;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 70px 0 20px;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-column {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .footer-column h3 {
+            margin-bottom: 25px;
+            font-size: 1.3rem;
+            color: var(--secondary);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+        
+        .footer-links a {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: var(--secondary);
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            background: var(--secondary);
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1100px) {
+            .hero-text h1 {
+                font-size: 2.8rem;
+            }
+            
+            .about-content {
+                flex-direction: column;
+            }
+            
+            .system-flow {
+                margin-top: 50px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: white;
+                flex-direction: column;
+                padding: 20px;
+                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .nav-links li {
+                margin: 10px 0;
+            }
+            
+            .mobile-menu {
+                display: block;
+            }
+            
+            .hero-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .hero-text {
+                margin-bottom: 50px;
+            }
+            
+            .hero-text h1 {
+                font-size: 2.2rem;
+            }
+            
+            .section-title h2 {
+                font-size: 2rem;
+            }
+            
+            .btn-outline {
+                margin-left: 0;
+                margin-top: 15px;
+            }
+            
+            .dashboard-content {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+            }
+            
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .card-large {
+                grid-column: span 1;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header & Navigation -->
+    <header id="header">
+        <div class="container">
+            <nav class="navbar">
+                <a href="#" class="logo">
+                    <i class="fas fa-fingerprint"></i>
+                    <span>ATLAS</span>
+                </a>
+                <ul class="nav-links">
+                    <li><a href="#beranda">Beranda</a></li>
+                    <li><a href="#tentang">Tentang Sistem</a></li>
+                    <li><a href="#fitur">Fitur</a></li>
+                    <li><a href="#dashboard">Dashboard</a></li>
+                    <li><a href="#peran">Hak Akses</a></li>
+                    <li><a href="#kontak">Kontak</a></li>
+                </ul>
+                <a href="#kontak" class="cta-button">Hubungi Kami</a>
+                <div class="mobile-menu">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="beranda" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1>Presensi Modern dengan Teknologi Pengenalan Wajah</h1>
+                    <p>ATLAS menghadirkan solusi presensi revolusioner untuk institusi pendidikan dengan teknologi pengenalan wajah yang akurat, real-time, dan terintegrasi penuh.</p>
+                    <div>
+                        <a href="#tentang" class="btn">Pelajari Lebih Lanjut</a>
+                        <a href="#kontak" class="btn btn-outline">Hubungi Kami</a>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="camera-animation">
+                        <div class="camera-body">
+                            <div class="camera-lens">
+                                <div class="lens-inner">
+                                    <div class="scan-beam"></div>
+                                </div>
+                            </div>
+                            <div class="face-detection"></div>
+                        </div>
+                    </div>
+                    <div class="floating-elements">
+                        <div class="floating-element element-1"></div>
+                        <div class="floating-element element-2"></div>
+                        <div class="floating-element element-3"></div>
+                        <div class="floating-element element-4"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="tentang" class="about">
+        <div class="container">
+            <div class="section-title">
+                <h2>Tentang Sistem ATLAS</h2>
+                <p>ATLAS menggunakan teknologi pengenalan wajah canggih untuk mengotomatisasi proses presensi di institusi pendidikan dengan akurasi tinggi dan integrasi yang mulus.</p>
+            </div>
+            <div class="about-content">
+                <div class="about-text">
+                    <h3>Cara Kerja Sistem ATLAS</h3>
+                    <p>ATLAS (Attendance Tracking via Live Authentication System) adalah sistem presensi inovatif yang memanfaatkan teknologi pengenalan wajah untuk mengidentifikasi dan mencatat kehadiran secara otomatis.</p>
+                    <p>Dengan kamera yang dipasang di gerbang sekolah atau pintu kelas, sistem akan mengenali wajah siswa secara real-time dan mencatat kehadiran mereka secara otomatis ke dalam database.</p>
+                    
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check-circle"></i> <span>Presensi otomatis tanpa perlu kartu atau perangkat tambahan</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>Notifikasi real-time dikirim ke orang tua via SMS Gateway</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>Akurasi tinggi dalam berbagai kondisi pencahayaan</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>Platform web dan mobile untuk akses mudah</span></li>
+                        <li><i class="fas fa-check-circle"></i> <span>Sistem komplain untuk ketidakakuratan data</span></li>
+                    </ul>
+                </div>
+                <div class="about-visual">
+                    <div class="system-flow">
+                        <div class="flow-step step-1">
+                            <div class="step-icon"><i class="fas fa-camera"></i></div>
+                            <div class="step-title">Kamera Menangkap Wajah</div>
+                        </div>
+                        <div class="flow-step step-2">
+                            <div class="step-icon"><i class="fas fa-brain"></i></div>
+                            <div class="step-title">Sistem Mengenali Wajah</div>
+                        </div>
+                        <div class="flow-step step-3">
+                            <div class="step-icon"><i class="fas fa-database"></i></div>
+                            <div class="step-title">Data Tersimpan di Database</div>
+                        </div>
+                        <div class="flow-step step-4">
+                            <div class="step-icon"><i class="fas fa-sms"></i></div>
+                            <div class="step-title">Notifikasi ke Orang Tua</div>
+                        </div>
+                        
+                        <div class="flow-connector connector-1"></div>
+                        <div class="flow-connector connector-2"></div>
+                        <div class="flow-connector connector-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="fitur" class="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Fitur Unggulan</h2>
+                <p>ATLAS menawarkan berbagai fitur canggih yang dirancang khusus untuk memenuhi kebutuhan semua pihak dalam ekosistem pendidikan.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <h3>Presensi Real-time</h3>
+                    <p>Sistem mencatat kehadiran secara otomatis saat siswa melewati kamera dengan akurasi tinggi dan waktu respons yang cepat.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-sms"></i>
+                    </div>
+                    <h3>Notifikasi SMS</h3>
+                    <p>Orang tua menerima notifikasi instan via SMS setiap kali anak mereka tiba di sekolah atau terdapat ketidakhadiran.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3>Analitik & Laporan</h3>
+                    <p>Dashboard lengkap dengan grafik dan statistik kehadiran untuk monitoring dan evaluasi yang komprehensif.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Aplikasi Mobile</h3>
+                    <p>Akses sistem melalui aplikasi mobile yang user-friendly untuk guru, orang tua, dan siswa.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Keamanan Data</h3>
+                    <p>Data wajah dan kehadiran disimpan dengan enkripsi tingkat tinggi untuk melindungi privasi pengguna.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h3>Manajemen Multi-peran</h3>
+                    <p>Sistem dengan hak akses berbeda untuk admin, guru, orang tua, dan siswa sesuai kebutuhan masing-masing.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Preview -->
+    <section id="dashboard" class="dashboard-preview">
+        <div class="container">
+            <div class="section-title">
+                <h2>Dashboard & Antarmuka</h2>
+                <p>Jelajahi antarmuka ATLAS yang intuitif dan coba fitur-fitur interaktifnya.</p>
+            </div>
+            
+            <div class="dashboard-container">
+                <div class="dashboard-screen">
+                    <div class="dashboard-header">
+                        <div class="logo">
+                            <i class="fas fa-fingerprint"></i>
+                            <span>ATLAS</span>
+                        </div>
+                        <ul class="dashboard-nav">
+                            <li class="active">Beranda</li>
+                            <li>Presensi</li>
+                            <li>Laporan</li>
+                            <li>Pengaturan</li>
+                        </ul>
+                    </div>
+                    <div class="dashboard-content">
+                        <div class="sidebar">
+                            <ul class="sidebar-menu">
+                                <li class="active"><i class="fas fa-home"></i> Dashboard</li>
+                                <li><i class="fas fa-user-friends"></i> Data Siswa</li>
+                                <li><i class="fas fa-calendar-check"></i> Presensi</li>
+                                <li><i class="fas fa-chart-pie"></i> Statistik</li>
+                                <li><i class="fas fa-bell"></i> Notifikasi</li>
+                                <li><i class="fas fa-cog"></i> Pengaturan</li>
+                            </ul>
+                        </div>
+                        <div class="main-content">
+                            <div class="dashboard-card card-large">
+                                <div class="card-title">
+                                    <span>Statistik Kehadiran</span>
+                                    <div class="filter-options">
+                                        <button class="filter-btn active">Hari Ini</button>
+                                        <button class="filter-btn">Minggu Ini</button>
+                                        <button class="filter-btn">Bulan Ini</button>
+                                    </div>
+                                </div>
+                                <div class="stats-grid">
+                                    <div class="stat-item">
+                                        <div class="stat-value">87%</div>
+                                        <div class="stat-label">Kehadiran</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-value">5%</div>
+                                        <div class="stat-label">Terlambat</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-value">8%</div>
+                                        <div class="stat-label">Tidak Hadir</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dashboard-card">
+                                <div class="card-title">Presensi Terbaru</div>
+                                <div class="attendance-list">
+                                    <div class="attendance-item">
+                                        <div class="student-avatar">AS</div>
+                                        <div class="student-info">
+                                            <div class="student-name">Ahmad Surya</div>
+                                            <div class="student-class">Kelas 10 IPA 1</div>
+                                        </div>
+                                        <div class="attendance-time">07:15</div>
+                                        <div class="attendance-status status-present">Hadir</div>
+                                    </div>
+                                    <div class="attendance-item">
+                                        <div class="student-avatar">BD</div>
+                                        <div class="student-info">
+                                            <div class="student-name">Budi Darmawan</div>
+                                            <div class="student-class">Kelas 11 IPS 2</div>
+                                        </div>
+                                        <div class="attendance-time">07:45</div>
+                                        <div class="attendance-status status-late">Terlambat</div>
+                                    </div>
+                                    <div class="attendance-item">
+                                        <div class="student-avatar">CS</div>
+                                        <div class="student-info">
+                                            <div class="student-name">Citra Sari</div>
+                                            <div class="student-class">Kelas 12 Bahasa</div>
+                                        </div>
+                                        <div class="attendance-time">-</div>
+                                        <div class="attendance-status status-absent">Tidak Hadir</div>
+                                    </div>
+                                    <div class="attendance-item">
+                                        <div class="student-avatar">DW</div>
+                                        <div class="student-info">
+                                            <div class="student-name">Dewi Wulandari</div>
+                                            <div class="student-class">Kelas 10 IPA 2</div>
+                                        </div>
+                                        <div class="attendance-time">07:10</div>
+                                        <div class="attendance-status status-present">Hadir</div>
+                                    </div>
+                                    <div class="attendance-item">
+                                        <div class="student-avatar">EP</div>
+                                        <div class="student-info">
+                                            <div class="student-name">Eko Prasetyo</div>
+                                            <div class="student-class">Kelas 11 IPA 1</div>
+                                        </div>
+                                        <div class="attendance-time">07:20</div>
+                                        <div class="attendance-status status-present">Hadir</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dashboard-card">
+                                <div class="card-title">Grafik Kehadiran</div>
+                                <div class="chart-container">
+                                    <div class="chart-placeholder">
+                                        <div>
+                                            <i class="fas fa-chart-line" style="font-size: 3rem; margin-bottom: 10px;"></i>
+                                            <p>Grafik Kehadiran 7 Hari Terakhir</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Roles Section -->
+    <section id="peran" class="roles">
+        <div class="container">
+            <div class="section-title">
+                <h2>Hak Akses Multi-peran</h2>
+                <p>ATLAS menyediakan hak akses yang berbeda untuk setiap peran pengguna dengan fitur yang disesuaikan kebutuhan.</p>
+            </div>
+            
+            <div class="roles-container">
+                <div class="role-card">
+                    <div class="role-header">
+                        <div class="role-icon"><i class="fas fa-user-shield"></i></div>
+                        <div class="role-title">Administrator</div>
+                    </div>
+                    <div class="role-body">
+                        <ul class="role-features">
+                            <li><i class="fas fa-check"></i> Manajemen data siswa dan kelas</li>
+                            <li><i class="fas fa-check"></i> Validasi dan koreksi absensi</li>
+                            <li><i class="fas fa-check"></i> Pendaftaran wajah ke sistem</li>
+                            <li><i class="fas fa-check"></i> Manajemen perangkat kamera</li>
+                            <li><i class="fas fa-check"></i> Akses ke semua data dan laporan</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="role-card">
+                    <div class="role-header">
+                        <div class="role-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                        <div class="role-title">Guru Mapel</div>
+                    </div>
+                    <div class="role-body">
+                        <ul class="role-features">
+                            <li><i class="fas fa-check"></i> Melihat jadwal mengajar</li>
+                            <li><i class="fas fa-check"></i> Rekapan absensi per mapel</li>
+                            <li><i class="fas fa-check"></i> Monitoring kehadiran siswa</li>
+                            <li><i class="fas fa-check"></i> Input nilai terkait kehadiran</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="role-card">
+                    <div class="role-header">
+                        <div class="role-icon"><i class="fas fa-user-tie"></i></div>
+                        <div class="role-title">Guru Wali Kelas</div>
+                    </div>
+                    <div class="role-body">
+                        <ul class="role-features">
+                            <li><i class="fas fa-check"></i> Input manual izin/sakit</li>
+                            <li><i class="fas fa-check"></i> Riwayat absensi kelas</li>
+                            <li><i class="fas fa-check"></i> Pusat notifikasi kelas</li>
+                            <li><i class="fas fa-check"></i> Komunikasi dengan orang tua</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="role-card">
+                    <div class="role-header">
+                        <div class="role-icon"><i class="fas fa-user-graduate"></i></div>
+                        <div class="role-title">Siswa</div>
+                    </div>
+                    <div class="role-body">
+                        <ul class="role-features">
+                            <li><i class="fas fa-check"></i> Presensi otomatis dengan wajah</li>
+                            <li><i class="fas fa-check"></i> Cek rekapan kehadiran</li>
+                            <li><i class="fas fa-check"></i> Ajukan komplain ketidakakuratan</li>
+                            <li><i class="fas fa-check"></i> Lihat statistik kehadiran pribadi</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="role-card">
+                    <div class="role-header">
+                        <div class="role-icon"><i class="fas fa-users"></i></div>
+                        <div class="role-title">Orang Tua</div>
+                    </div>
+                    <div class="role-body">
+                        <ul class="role-features">
+                            <li><i class="fas fa-check"></i> Notifikasi kehadiran via SMS</li>
+                            <li><i class="fas fa-check"></i> Pantau riwayat absensi anak</li>
+                            <li><i class="fas fa-check"></i> Ajukan izin/sakit untuk anak</li>
+                            <li><i class="fas fa-check"></i> Komunikasi dengan wali kelas</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="role-card">
+                    <div class="role-header">
+                        <div class="role-icon"><i class="fas fa-user-cog"></i></div>
+                        <div class="role-title">Kepala Sekolah</div>
+                    </div>
+                    <div class="role-body">
+                        <ul class="role-features">
+                            <li><i class="fas fa-check"></i> Pantau kehadiran real-time</li>
+                            <li><i class="fas fa-check"></i> Akses laporan analitik lengkap</li>
+                            <li><i class="fas fa-check"></i> Statistik kehadiran sekolah</li>
+                            <li><i class="fas fa-check"></i> Evaluasi performa kehadiran</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Siap Mengubah Sistem Presensi di Institusi Anda?</h2>
+            <p>Hubungi kami sekarang untuk informasi lebih lanjut tentang bagaimana ATLAS dapat meningkatkan efisiensi dan akurasi sistem presensi di sekolah Anda.</p>
+            <div class="cta-buttons">
+                <a href="#kontak" class="btn">Hubungi Kami</a>
+                <a href="#" class="btn btn-outline">Download Brosur</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="kontak">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>ATLAS</h3>
+                    <p>Sistem presensi modern dengan teknologi pengenalan wajah untuk meningkatkan efisiensi dan akurasi di institusi pendidikan.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Menu Cepat</h3>
+                    <ul class="footer-links">
+                        <li><a href="#beranda">Beranda</a></li>
+                        <li><a href="#tentang">Tentang Sistem</a></li>
+                        <li><a href="#fitur">Fitur</a></li>
+                        <li><a href="#dashboard">Dashboard</a></li>
+                        <li><a href="#peran">Hak Akses</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Layanan</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Implementasi Sistem</a></li>
+                        <li><a href="#">Pelatihan Pengguna</a></li>
+                        <li><a href="#">Dukungan Teknis</a></li>
+                        <li><a href="#">Pembaruan Sistem</a></li>
+                        <li><a href="#">Konsultasi</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Kontak</h3>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-map-marker-alt"></i> Jl. Bathin Alam - Sungai Alam - Bengkalis - 28711</li>
+                        <li><i class="fas fa-phone"></i> +62 852 1334 5165</li>
+                        <li><i class="fas fa-envelope"></i> info@atlas-system.id</li>
+                        <li><i class="fas fa-clock"></i> Senin - Jumat: 08:00 - 17:00 WIB</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 ATLAS - Attendance Tracking via Live Authentication System. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        document.querySelector('.mobile-menu').addEventListener('click', function() {
+            document.querySelector('.nav-links').classList.toggle('active');
+        });
+
+        // Header Scroll Effect
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('header');
+            if (window.scrollY > 50) {
+                header.classList.add('header-scrolled');
+            } else {
+                header.classList.remove('header-scrolled');
+            }
+        });
+
+        // Smooth Scrolling for Navigation Links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                    
+                    // Close mobile menu if open
+                    document.querySelector('.nav-links').classList.remove('active');
+                }
+            });
+        });
+
+        // Dashboard Navigation
+        document.querySelectorAll('.dashboard-nav li').forEach(item => {
+            item.addEventListener('click', function() {
+                // Remove active class from all items
+                document.querySelectorAll('.dashboard-nav li').forEach(i => {
+                    i.classList.remove('active');
+                });
+                // Add active class to clicked item
+                this.classList.add('active');
+                
+                // Show notification for demo purposes
+                if(this.textContent === 'Presensi') {
+                    alert('Anda membuka halaman Presensi. Di sini Anda dapat melihat dan mengelola data presensi siswa.');
+                } else if(this.textContent === 'Laporan') {
+                    alert('Anda membuka halaman Laporan. Di sini Anda dapat melihat laporan kehadiran dalam berbagai format.');
+                } else if(this.textContent === 'Pengaturan') {
+                    alert('Anda membuka halaman Pengaturan. Di sini Anda dapat mengonfigurasi sistem ATLAS.');
+                }
+            });
+        });
+
+        // Sidebar Menu Interaction
+        document.querySelectorAll('.sidebar-menu li').forEach(item => {
+            item.addEventListener('click', function() {
+                // Remove active class from all items
+                document.querySelectorAll('.sidebar-menu li').forEach(i => {
+                    i.classList.remove('active');
+                });
+                // Add active class to clicked item
+                this.classList.add('active');
+                
+                // Show notification for demo purposes
+                const menuText = this.textContent.trim();
+                if(menuText === 'Data Siswa') {
+                    alert('Anda membuka menu Data Siswa. Di sini Anda dapat melihat dan mengelola data siswa.');
+                } else if(menuText === 'Statistik') {
+                    alert('Anda membuka menu Statistik. Di sini Anda dapat melihat analisis data kehadiran.');
+                } else if(menuText === 'Notifikasi') {
+                    alert('Anda membuka menu Notifikasi. Di sini Anda dapat melihat dan mengelola notifikasi sistem.');
+                } else if(menuText === 'Pengaturan') {
+                    alert('Anda membuka menu Pengaturan. Di sini Anda dapat mengonfigurasi preferensi sistem.');
+                }
+            });
+        });
+
+        // Filter Buttons Interaction
+        document.querySelectorAll('.filter-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Update statistics based on filter
+                const filter = this.textContent;
+                if(filter === 'Minggu Ini') {
+                    document.querySelector('.stat-item:nth-child(1) .stat-value').textContent = '85%';
+                    document.querySelector('.stat-item:nth-child(2) .stat-value').textContent = '7%';
+                    document.querySelector('.stat-item:nth-child(3) .stat-value').textContent = '8%';
+                } else if(filter === 'Bulan Ini') {
+                    document.querySelector('.stat-item:nth-child(1) .stat-value').textContent = '89%';
+                    document.querySelector('.stat-item:nth-child(2) .stat-value').textContent = '6%';
+                    document.querySelector('.stat-item:nth-child(3) .stat-value').textContent = '5%';
+                } else {
+                    document.querySelector('.stat-item:nth-child(1) .stat-value').textContent = '87%';
+                    document.querySelector('.stat-item:nth-child(2) .stat-value').textContent = '5%';
+                    document.querySelector('.stat-item:nth-child(3) .stat-value').textContent = '8%';
+                }
+            });
+        });
+
+        // Animation on scroll
+        function animateOnScroll() {
+            const elements = document.querySelectorAll('.feature-card, .role-card, .flow-step');
+            
+            elements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 150;
+                
+                if (elementTop < window.innerHeight - elementVisible) {
+                    element.style.opacity = "1";
+                    element.style.transform = "translateY(0)";
+                }
+            });
+        }
+
+        // Set initial state for animated elements
+        document.querySelectorAll('.feature-card, .role-card, .flow-step').forEach(element => {
+            element.style.opacity = "0";
+            element.style.transform = "translateY(20px)";
+            element.style.transition = "opacity 0.5s ease, transform 0.5s ease";
+        });
+
+        // Trigger animation on scroll
+        window.addEventListener('scroll', animateOnScroll);
+        // Initial check
+        animateOnScroll();
+    </script>
+</body>
+</html>
